@@ -8,8 +8,15 @@ $query_run = mysqli_query($conn, $query);
 
 ?>
 
-<div style="width: 100vw; height: calc(100vh - 82px); overflow-Y: scroll;" id="display_images_container">
+<div style="width: 100vw; height: calc(100vh - 82px); overflow-Y: scroll;" id="display_images_container"  class="selectionStart">
     <div class="container">
+
+        <div class="binContainerBtns">
+            <button class="btn btn-success navBtn temp" onclick="imageSelectHandler();">Select</button>
+            <button class="btn btn-danger navBtn" onclick="deleteSelectedImage();">Delete Selected</button>
+            <button class="btn btn-danger navBtn" onclick="deleteAllImages();">Delete All</button>
+        </div>
+
         <div class="row image_row">
 
             <?php
@@ -33,13 +40,21 @@ $query_run = mysqli_query($conn, $query);
                             <!-- <div class="card-body" style="padding: 0;">
                         </div> -->
 
+                            
+
                             <div class="card-footer text-muted" style="height: 100%;">
 
+                            
                                 <a href="detailed_image.php?id=<?php echo $row['id']; ?>">
-                                    <div class="card-image-overlay" onmouseover="imageMouseOver(<?php echo $row['id']; ?>)"
+                                        <div class="card-image-overlay" onmouseover="imageMouseOver(<?php echo $row['id']; ?>)"
                                         onmouseout="imageMouseOut(<?php echo $row['id']; ?>)">
                                     </div>
                                 </a>
+
+                                <button class="btn btn-light selection_btn"
+                                        onclick="select_gallery_image_handler(<?php echo $row['id']; ?>);">
+                                    <input class="form-check-input" type="checkbox" value="" disabled>
+                                </button>
 
                                 <div class="card-btn-container" onmouseover="btnMouseOver(<?php echo $row['id']; ?>)"
                                     onmouseout="btnMouseOut(<?php echo $row['id']; ?>)">

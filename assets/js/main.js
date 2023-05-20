@@ -579,13 +579,22 @@ function delete_image(id) {
       url: `${root_route}controllers/image_handler.php`,
       data: {
         delete_image: "delete_image",
-        id: id,
+        id: [id],
       },
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-        console.log(`#${obj.image_id}`);
-        $(`#${obj.image_id}`).remove();
+
+        // console.log(obj);
+
+        // console.log(`#${obj.image_id}`);
+
+        $.each(obj.image_ids, function( index, id ) {
+          console.log(`#${id}`);
+          $(`#${id}`).remove();
+        });
+
+        // $(`#${obj.image_id}`).remove();
 
         if ( $('.image_row').children().length === 0 ) {
           $('.image_row').append(display_image_default);
@@ -594,8 +603,6 @@ function delete_image(id) {
         if ( $('.image_row').children().length <= 8 ) {
           get_display_images();
         }
-
-
 
       }
     });
@@ -858,6 +865,93 @@ function select_image_handler(id) {
   console.log(bin_checked_images);
 }
 
+
+
+// function restoreImageFun(id) {
+//   $.ajax({
+//     type: "POST",
+//     url: `${root_route}controllers/image_handler.php`,
+//     data: {
+//       restoreImage: "bin_image_delete_form",
+//       id: id,
+//     },
+//   }).done(function (data) {
+//     let obj = $.parseJSON(data);
+//     if (obj.status === "success") {
+//       // console.log(obj);
+//       $(`#${obj.image_id}`).remove();
+
+//       if ( $('.image_row').children().length === 0 ) {
+//         $('.image_row').append(bin_home_default);
+//       } else if ( $('.image_row').children().length <= 8 ) {
+//         get_bin_images();
+//       }
+
+//     }
+//   });
+// }
+
+
+
+
+function RestoreSelected() {
+    $.ajax({
+      type: "POST",
+      url: `${root_route}controllers/image_handler.php`,
+      data: {
+        RestoreSelected: "deleteSelected",
+        id: bin_checked_images,
+      },
+    }).done(function (data) {
+      let obj = $.parseJSON(data);
+      if (obj.status === "success") {
+  
+        $.each(obj.image_ids, function( index, id ) {
+          console.log(`#${id}`);
+          $(`#${id}`).remove();
+        });
+
+        if ( $('.image_row').children().length === 0 ) {
+          $('.image_row').append(bin_home_default);
+        } else if ( $('.image_row').children().length <= 8 ) {
+          get_bin_images();
+        }
+  
+        // console.log(obj);
+      }
+    });
+  
+}
+
+function RestoreAllBin() {
+  $.ajax({
+      type: "POST",
+      url: `${root_route}controllers/image_handler.php`,
+      data: {
+        RestoreAllBin: "deleteAllBin",
+        id: bin_checked_images,
+        all: true
+      },
+    }).done(function (data) {
+      let obj = $.parseJSON(data);
+      if (obj.status === "success") {
+  
+        // console.log(obj);
+  
+        $.each(obj.image_ids, function( index, id ) {
+          console.log(`#${id}`);
+          $(`#${id}`).remove();
+        });
+  
+        if ( $('.image_row').children().length === 0 ) {
+          $('.image_row').append(bin_home_default);
+        }
+  
+      }
+    });
+  
+}
+
 function deleteSelected() {
   if (confirm("Are you sure you want to delete these selected Images")) {
     $.ajax({
@@ -914,6 +1008,112 @@ function deleteAllBin() {
   
         if ( $('.image_row').children().length === 0 ) {
           $('.image_row').append(bin_home_default);
+        }
+  
+      }
+    });
+  }
+  
+}
+
+
+// ***********************gallery checked Images
+
+let gallery_checked_images = [];
+
+function imageSelectHandler() {
+  let checkbox = $(`.form-check-input`);
+
+  if($('#display_images_container').hasClass("selectionStart")) {  // show check boxes
+    $('#display_images_container').removeClass("selectionStart");
+
+    
+  } else {                                                     // hide check boxes
+    $('#display_images_container').addClass("selectionStart");
+
+    checkbox.prop("checked", false);
+    gallery_checked_images = [];
+  }
+}
+
+function select_gallery_image_handler(id) {
+  let checkbox = $(`#${id} .form-check-input`);
+
+  checkbox.prop("checked", !checkbox.prop("checked"));
+
+  let isChecked = checkbox.is(":checked");
+
+  if (isChecked) {
+    gallery_checked_images.push(id);
+  } else if (gallery_checked_images.indexOf(id) !== -1) {
+    gallery_checked_images.splice(gallery_checked_images.indexOf(id), 1);
+  }
+
+  console.log(gallery_checked_images);
+}
+
+function deleteSelectedImage() {
+  if (confirm("Are you sure you want to delete these selected Images")) {
+    $.ajax({
+      type: "POST",
+      url: `${root_route}controllers/image_handler.php`,
+      data: {
+        deleteSelectedImage: "deleteSelectedImage",
+        id: gallery_checked_images,
+      },
+    }).done(function (data) {
+      let obj = $.parseJSON(data);
+      if (obj.status === "success") {
+  
+        $.each(obj.image_ids, function( index, id ) {
+          console.log(`#${id}`);
+          $(`#${id}`).remove();
+        });
+
+        // $(`#${obj.image_id}`).remove();
+
+        if ( $('.image_row').children().length === 0 ) {
+          $('.image_row').append(display_image_default);
+        }
+
+        if ( $('.image_row').children().length <= 8 ) {
+          get_display_images();
+        }
+  
+        // console.log(obj);
+      }
+    });
+  }
+  
+}
+
+function deleteAllImages() {
+  if (confirm("Are you sure you want to delete all these Images")) {
+    $.ajax({
+      type: "POST",
+      url: `${root_route}controllers/image_handler.php`,
+      data: {
+        deleteAllImages: "deleteAllImages",
+        id: gallery_checked_images,
+        all: true
+      },
+    }).done(function (data) {
+      let obj = $.parseJSON(data);
+      if (obj.status === "success") {
+  
+        $.each(obj.image_ids, function( index, id ) {
+          console.log(`#${id}`);
+          $(`#${id}`).remove();
+        });
+
+        // $(`#${obj.image_id}`).remove();
+
+        if ( $('.image_row').children().length === 0 ) {
+          $('.image_row').append(display_image_default);
+        }
+
+        if ( $('.image_row').children().length <= 8 ) {
+          get_display_images();
         }
   
       }
