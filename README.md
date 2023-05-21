@@ -1,4 +1,4 @@
-# Gallery [Apple](https://www.apple.com/) website
+# [Gallery](https://www.apple.com/) website
 ## Features
 In this I just make a Home page of Apple which contains 
 - Navbar
