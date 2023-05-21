@@ -1,4 +1,48 @@
-<nav class="navbar shadow-sm navbar-light bg-light">
+<?php   
+
+$isHomeActive = false;
+$isBinActive = false;
+
+if($_SESSION["current_script_name"] == "/views/pages/home.php") {
+    $isHomeActive = true;
+} else if ($_SESSION["current_script_name"] == "/views/pages/bin.php") {
+    $isBinActive = true;
+}
+
+?>
+
+<nav class="navbar navbar-light navbar-expand-md shadow-sm bg-faded">
+    
+        <a href="/" class="navbar-brand w-10 d-flex me-auto">Gallery</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsingNavbar3">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+            
+            <ul class="nav navbar-nav ms-auto justify-content-end">
+              
+                <li class="nav-item <?php if($isHomeActive) echo 'active' ?>">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item <?php if($isBinActive) echo 'active' ?>" style="margin-right: 30px;">
+                    <a class="nav-link" href="/views/pages/bin.php">Bin</a>
+                </li>
+
+                <?php if(!isset($_SESSION['email'])) { ?>
+                    <button class="btn btn-primary navBtn" data-bs-target="#loginModalToggle" data-bs-toggle="modal">Login</button>
+                    <button class="btn btn-outline-primary navBtn" data-bs-target="#signupModalToggle" data-bs-toggle="modal">Sign Up</button>
+                <?php } else { ?>
+                    <form action="../../controllers/auth.php" method="POST" style="display: inline-block">
+                        <button type="submit" class="btn btn-danger navBtn" name="logout" value="logout">logout</button>
+                    </form>
+                <?php } ?>
+
+            </ul>
+        </div>
+</nav>
+
+<!-- <nav class="navbar shadow-sm navbar-light bg-light">
 
     <a class="navbar-brand" href="/">Gallery</a>
 
@@ -14,11 +58,9 @@
             </form>
         <?php } ?>
 
-        
-      
     </div>
 
-</nav>
+</nav> -->
 
 <!-- ************ Login Modal -->
 

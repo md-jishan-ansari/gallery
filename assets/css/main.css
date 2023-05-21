@@ -29,6 +29,7 @@ body {
     right: 0;
     top: 80px;
     bottom: 0;
+    transition: top 0.5s linear 0s;
 }
 
 .home_default > img {
@@ -47,6 +48,7 @@ body {
     width: 70%;
     padding: 40px;
     text-align: center;
+    transition: top 0.5s linear 0s;
 }
 
 .home_default_card h5 {
@@ -61,11 +63,24 @@ body {
 
 .navbar {
     padding: 12px 50px;
+    /* width: 100%; */
+    /* margin-bottom: 20px; */
+}
+
+.navbar .nav-item {
+    font-size: 20px !important;
+    margin-left: 20px !important;
+}
+
+.navbar .nav-item.active {
+    font-weight: bold !important;
+    border-bottom: 2px solid black;
 }
 
 .navbar-brand {
     font-size:32px;
     font-weight:bold;
+    margin-right: 30px !important;
 }
 
 .navBtn {
@@ -245,6 +260,10 @@ body {
     flex-direction: column;
 }
 
+.binContainerBtns .navBtn {
+    margin-bottom: 12px;
+}
+
 .selectionStart .selection_btn {
     display: none;
 }
@@ -319,6 +338,11 @@ body {
 @media only screen and (max-width: 768px) {
     .home_default_card {
         width: 90%;
+    }
+
+    .navbar .navBtn {
+        margin-top: 16px !important;
+        width: 160px;
     }
     
     .home_default_card h5 {

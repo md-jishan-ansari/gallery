@@ -1,5 +1,18 @@
 let root_route = "../../";
 
+
+$(document).ready(function() {
+  $(".navbar-toggler").click(function(){
+    if($(this).hasClass("collapsed")) {
+      // $(".home_default_card").css("top", "45%")
+      $(".home_default").css("top", "80px")
+    } else {
+      // $(".home_default_card").css("top", "60%")
+      $(".home_default").css("top", "275px")
+    }
+  });
+});
+
 let bin_home_default = `
           <div class="home_default">
               <div class="card border-warning shadow-lg home_default_card">
@@ -45,6 +58,7 @@ $(document).ready(function () {
       !obj.email &&
       !obj["404"] &&
       obj.current_url != "/views/pages/home.php" &&
+      obj.current_url != "/views/pages/bin.php" &&
       obj.current_url != "/views/pages/"
     ) {
       $("#loginModalToggle").modal("show");
