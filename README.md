@@ -1,4 +1,4 @@
-# [Gallery](https://www.apple.com/) website
+# [Gallery](https://gallery2023.000webhostapp.com/views/pages/home.php) website
 ## Features
 In this I just make a Home page of Apple which contains 
 - Navbar
