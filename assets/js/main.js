@@ -664,13 +664,16 @@ function restoreImageFun(id) {
     url: `${root_route}controllers/image_handler.php`,
     data: {
       restoreImage: "bin_image_delete_form",
-      id: id,
+      id: [id],
     },
   }).done(function (data) {
     let obj = $.parseJSON(data);
     if (obj.status === "success") {
       // console.log(obj);
-      $(`#${obj.image_id}`).remove();
+      $.each(obj.image_ids, function( index, id ) {
+        console.log(`#${id}`);
+        $(`#${id}`).remove();
+      });
 
       if ( $('.image_row').children().length === 0 ) {
         $('.image_row').append(bin_home_default);
