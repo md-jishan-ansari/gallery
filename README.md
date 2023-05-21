@@ -1,6 +1,6 @@
 # [Gallery](https://gallery2023.000webhostapp.com/views/pages/home.php) website
 ## Features
-In this I make a Gallery website
+In this Project, I make a Gallery website it contain
 - Navbar
 - Home (all uploaded Images present)
 - bin (all deleted images present)
@@ -9,7 +9,7 @@ In this I make a Gallery website
 
 ## Functionality and Approach
 - ## Navbar
-In navbar it there is a login signup button until you don't singup or login you can't access your uploded Images and other things
+In navbar, there is a login signup button,  until you don't singup or login you can't access your uploded Images and other things
 
 ### Tech Stack used in Navbar: HTML, css, Bootstrap 
 For login signup I used bootstrap model and I also used AJAX so that If any field filled wrong than user only have to change wrong filled input and rest input fields already filled with old value
