@@ -80,9 +80,7 @@ if (isset($_POST['signup'])) {
 
     // $past_url = get_past_url("signup");
     // header("location:..{$past_url}");
-
     echo json_encode($result);
-
 }
 
 if (isset($_POST['login'])) {
