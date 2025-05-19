@@ -52,28 +52,32 @@ $(document).ready(function () {
     data: {
       get_session_during_reload: "get_session_during_reload",
     },
-  }).done(function (data) {
-    let obj = $.parseJSON(data);
-    if (
-      !obj.email &&
-      !obj["404"] &&
-      obj.current_url != "/views/pages/home.php" &&
-      obj.current_url != "/views/pages/bin.php" &&
-      obj.current_url != "/views/pages/"
-    ) {
-      $("#loginModalToggle").modal("show");
+    dataType: 'json',
+    success: function(data) {
+      if (
+        !data.email &&
+        !data["404"] &&
+        data.current_url != "/views/pages/home.php" &&
+        data.current_url != "/views/pages/bin.php" &&
+        data.current_url != "/views/pages/"
+      ) {
+        $("#loginModalToggle").modal("show");
 
-      $("#loginModalToggle").on("hidden.bs.modal", function () {
-        if (!obj.email && !$("#signupModalToggle").is(":visible")) {
-          $("#loginModalToggle").modal("show");
-        }
-      });
+        $("#loginModalToggle").on("hidden.bs.modal", function () {
+          if (!data.email && !$("#signupModalToggle").is(":visible")) {
+            $("#loginModalToggle").modal("show");
+          }
+        });
 
-      $("#signupModalToggle").on("hidden.bs.modal", function () {
-        if (!obj.email) {
-          $("#loginModalToggle").modal("show");
-        }
-      });
+        $("#signupModalToggle").on("hidden.bs.modal", function () {
+          if (!data.email) {
+            $("#loginModalToggle").modal("show");
+          }
+        });
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error("Error checking session:", error);
     }
   });
 });
@@ -158,11 +162,9 @@ function get_image_template(image, HTTP_HOST) {
   let img =
     root_route +
     image["path"] +
-    image["image_name"]  +
+    image["image_name"] +
     "." +
     image["image_ext"];
-
-  // $encrypted_id = openssl_encrypt($image['id'], $ciphering, $secret_key, $options, $secret_iv);
 
   let str = `
     <div class="col col-lg-3 col-md-4 col-sm-6 col-12 mt-4" id="${
@@ -190,22 +192,22 @@ function get_image_template(image, HTTP_HOST) {
                   <!-- edit button -->
                   <button class="btn" onclick="show_Image_title_input(${
                     image["id"]
-                  });"> 
+                  });">
                       <i class="bi bi-pencil-square"></i>
                   </button>
 
                   <!-- delete button -->
                   <button class="btn" onclick="delete_image(${
                     image["id"]
-                  });">        
+                  });">
                       <i class="bi bi-trash3-fill"></i>
                   </button>
 
                   <!-- share button -->
                   <button class="btn" data-bs-target="#shareModalToggle-${
                     image["id"]
-                  }"  
-                      data-bs-toggle="modal">                                                        
+                  }"
+                      data-bs-toggle="modal">
                       <i class="bi bi-share-fill"></i>
                   </button>
               </div>
@@ -345,30 +347,30 @@ function get_bin_image_template(image) {
     image["image_ext"];
 
   let str = `
-  
-  <div 
-      class="col col-lg-3 col-md-4 col-sm-6 col-12 mt-4" 
-      id="${image["id"]}" 
+
+  <div
+      class="col col-lg-3 col-md-4 col-sm-6 col-12 mt-4"
+      id="${image["id"]}"
       data-value="${image["id"]}"
   >
 
     <div class="card shadow-sm" style="height: 100%;">
-            <img 
-                src="${img}" 
-                class="card-img-top" 
+            <img
+                src="${img}"
+                class="card-img-top"
                 alt="${image["image_name"] }"
             >
 
             <div class="card-footer text-muted" style="height: 100%;">
 
-                <div 
-                    class="card-image-overlay" 
+                <div
+                    class="card-image-overlay"
                     onmouseover="imageMouseOver(${ image["id"]})"
                     onmouseout="imageMouseOut(${image["id"]})">
                 </div>
 
                 <!-- select button -->
-                <button 
+                <button
                     class="btn btn-light selection_btn"
                     onclick="select_image_handler(${image["id"] });"
                 >
@@ -376,13 +378,13 @@ function get_bin_image_template(image) {
                 </button>
 
 
-                <div 
-                    class="card-btn-container" 
+                <div
+                    class="card-btn-container"
                     onmouseover="btnMouseOver(${image["id"] })"
                     onmouseout="btnMouseOut(${image["id"]})"
                 >
                     <!-- edit button -->
-                    <button 
+                    <button
                         class="btn btn-light restoreBtn"
                         onclick="restoreImageFun(${image["id"]});"
                     >
@@ -391,15 +393,15 @@ function get_bin_image_template(image) {
 
                     <!-- delete button -->
                     <form class="bin_image_delete_form" style="display: inline-block;">
-                        <input 
-                            type="hidden" 
-                            value="${image["id"]}" 
-                            name="image_id" 
+                        <input
+                            type="hidden"
+                            value="${image["id"]}"
+                            name="image_id"
                         />
-                        <button 
-                            class="btn" 
-                            type="submit" 
-                            name="delete_image" 
+                        <button
+                            class="btn"
+                            type="submit"
+                            name="delete_image"
                             value="Delete"
                         >
                             <i class="bi bi-trash3-fill"></i>
@@ -417,7 +419,7 @@ function get_bin_image_template(image) {
           </div>
      </div>
     </div>
-  
+
   `;
 
   return str;
@@ -585,8 +587,6 @@ $(document).on("submit", ".image_title_input", function (e) {
 });
 
 function delete_image(id) {
-  // console.log("deleted");
-
   if (confirm("Are you sure you want to delete the Image")) {
     $.ajax({
       type: "POST",
@@ -598,26 +598,16 @@ function delete_image(id) {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
+        // Remove the deleted image
+        $(`#${id}`).remove();
 
-        // console.log(obj);
-
-        // console.log(`#${obj.image_id}`);
-
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
-          $(`#${id}`).remove();
-        });
-
-        // $(`#${obj.image_id}`).remove();
-
-        if ( $('.image_row').children().length === 0 ) {
+        // Check if we need to show the default message
+        if ($('.image_row').children().length === 0) {
           $('.image_row').append(display_image_default);
-        }
-
-        if ( $('.image_row').children().length <= 8 ) {
+        } else if ($('.image_row').children().length <= 8) {
+          // Load more images if needed
           get_display_images();
         }
-
       }
     });
   }
@@ -639,20 +629,16 @@ $(document).on("submit", ".bin_image_delete_form", function (e) {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
+        // Remove the deleted image
+        $(`#${id}`).remove();
 
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
-          $(`#${id}`).remove();
-        });
-
-        if ( $('.image_row').children().length === 0 ) {
+        // Check if we need to show the default message
+        if ($('.image_row').children().length === 0) {
           $('.image_row').append(bin_home_default);
-        } else if ( $('.image_row').children().length <= 8 ) {
+        } else if ($('.image_row').children().length <= 8) {
+          // Load more images if needed
           get_bin_images();
         }
-
-
-        // console.log(obj);
       }
     });
   }
@@ -857,7 +843,7 @@ function selectHandler() {
   if($('#bin_images_container').hasClass("selectionStart")) {  // show check boxes
     $('#bin_images_container').removeClass("selectionStart");
 
-    
+
   } else {                                                     // hide check boxes
     $('#bin_images_container').addClass("selectionStart");
 
@@ -922,7 +908,7 @@ function RestoreSelected() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
+
         $.each(obj.image_ids, function( index, id ) {
           console.log(`#${id}`);
           $(`#${id}`).remove();
@@ -933,11 +919,11 @@ function RestoreSelected() {
         } else if ( $('.image_row').children().length <= 8 ) {
           get_bin_images();
         }
-  
+
         // console.log(obj);
       }
     });
-  
+
 }
 
 function RestoreAllBin() {
@@ -952,21 +938,21 @@ function RestoreAllBin() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
+
         // console.log(obj);
-  
+
         $.each(obj.image_ids, function( index, id ) {
           console.log(`#${id}`);
           $(`#${id}`).remove();
         });
-  
+
         if ( $('.image_row').children().length === 0 ) {
           $('.image_row').append(bin_home_default);
         }
-  
+
       }
     });
-  
+
 }
 
 function deleteSelected() {
@@ -981,25 +967,26 @@ function deleteSelected() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
+        // Remove all selected images
+        bin_checked_images.forEach(function(id) {
           $(`#${id}`).remove();
         });
-  
-        if ( $('.image_row').children().length === 0 ) {
-          $('.image_row').append(bin_home_default);
-        }
 
-        else if ( $('.image_row').children().length <= 8 ) {
+        // Clear the selection
+        bin_checked_images = [];
+        $('#bin_images_container').addClass("selectionStart");
+        $('.form-check-input').prop("checked", false);
+
+        // Check if we need to show the default message
+        if ($('.image_row').children().length === 0) {
+          $('.image_row').append(bin_home_default);
+        } else if ($('.image_row').children().length <= 8) {
+          // Load more images if needed
           get_bin_images();
         }
-  
-        // console.log(obj);
       }
     });
   }
-  
 }
 
 function deleteAllBin() {
@@ -1015,22 +1002,17 @@ function deleteAllBin() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
-        // console.log(obj);
-  
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
-          $(`#${id}`).remove();
-        });
-  
-        if ( $('.image_row').children().length === 0 ) {
-          $('.image_row').append(bin_home_default);
-        }
-  
+        // Remove all images
+        $('.image_row').empty();
+        $('.image_row').append(bin_home_default);
+
+        // Clear the selection
+        bin_checked_images = [];
+        $('#bin_images_container').addClass("selectionStart");
+        $('.form-check-input').prop("checked", false);
       }
     });
   }
-  
 }
 
 
@@ -1044,7 +1026,7 @@ function imageSelectHandler() {
   if($('#display_images_container').hasClass("selectionStart")) {  // show check boxes
     $('#display_images_container').removeClass("selectionStart");
 
-    
+
   } else {                                                     // hide check boxes
     $('#display_images_container').addClass("selectionStart");
 
@@ -1081,27 +1063,26 @@ function deleteSelectedImage() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
+        // Remove all selected images
+        gallery_checked_images.forEach(function(id) {
           $(`#${id}`).remove();
         });
 
-        // $(`#${obj.image_id}`).remove();
+        // Clear the selection
+        gallery_checked_images = [];
+        $('#display_images_container').addClass("selectionStart");
+        $('.form-check-input').prop("checked", false);
 
-        if ( $('.image_row').children().length === 0 ) {
+        // Check if we need to show the default message
+        if ($('.image_row').children().length === 0) {
           $('.image_row').append(display_image_default);
-        }
-
-        if ( $('.image_row').children().length <= 8 ) {
+        } else if ($('.image_row').children().length <= 8) {
+          // Load more images if needed
           get_display_images();
         }
-  
-        // console.log(obj);
       }
     });
   }
-  
 }
 
 function deleteAllImages() {
@@ -1117,25 +1098,16 @@ function deleteAllImages() {
     }).done(function (data) {
       let obj = $.parseJSON(data);
       if (obj.status === "success") {
-  
-        $.each(obj.image_ids, function( index, id ) {
-          console.log(`#${id}`);
-          $(`#${id}`).remove();
-        });
+        // Remove all images
+        $('.image_row').empty();
+        $('.image_row').append(display_image_default);
 
-        // $(`#${obj.image_id}`).remove();
-
-        if ( $('.image_row').children().length === 0 ) {
-          $('.image_row').append(display_image_default);
-        }
-
-        if ( $('.image_row').children().length <= 8 ) {
-          get_display_images();
-        }
-  
+        // Clear the selection
+        gallery_checked_images = [];
+        $('#display_images_container').addClass("selectionStart");
+        $('.form-check-input').prop("checked", false);
       }
     });
   }
-  
 }
 

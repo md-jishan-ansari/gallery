@@ -6,18 +6,19 @@ include("../config/connection.php");
 
 if(isset($_POST['get_session_during_reload'])){
     $result = [
-        "email" => $_SESSION['email'],
-        "404" => $_SESSION['404'],
-        "current_url" => $_SESSION["current_url"]
+        "email" => isset($_SESSION['email']) ? $_SESSION['email'] : null,
+        "404" => isset($_SESSION['404']) ? $_SESSION['404'] : null,
+        "current_url" => isset($_SESSION["current_url"]) ? $_SESSION["current_url"] : null
     ];
-    
+
+    // Ensure proper JSON encoding
+    header('Content-Type: application/json');
     echo json_encode($result);
+    exit;
 }
 
 function get_past_url($auth_type)  //this is helping function for getting current url
 {
-    // $queryString = http_build_query($queryArray);
-
     $past_queries_array = $_SESSION["current_queries"];
     $past_script_name = $_SESSION['current_script_name'];
 
@@ -37,7 +38,7 @@ function get_past_url($auth_type)  //this is helping function for getting curren
 }
 
 if (isset($_POST['signup'])) {
-    
+
     $name = $_POST['signup_username'];
     $email = $_POST['signup_email'];
     $password = $_POST['signup_password'];
@@ -45,8 +46,8 @@ if (isset($_POST['signup'])) {
 
     $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-    $query_email = "SELECT * FROM user_table where email = '$email'";
-    $query_email_run = mysqli_query($conn, $query_email);
+    $query_email = "SELECT * FROM user_table WHERE email = $1";
+    $query_email_run = pg_query_params($conn, $query_email, array($email));
 
     $result = [
         "status"=> "failed",
@@ -54,21 +55,15 @@ if (isset($_POST['signup'])) {
         "url" => "http://" . $_SERVER['HTTP_HOST'] . get_past_url(""),
     ];
 
-    if ($query_email_run && mysqli_num_rows($query_email_run)) {
-
+    if ($query_email_run && pg_num_rows($query_email_run)) {
         $result["message"] = "Email is already registered!";
-
     } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
         $result["message"] = "$email is not a valid email address";
-
     } else if ($password != $cpassword) {
-
-        $result["message"] = "Password and Comfirm Password are not same";
-
+        $result["message"] = "Password and Confirm Password are not same";
     } else {
-        $query = "INSERT INTO user_table (username, email, password) values('$name', '$email', '$password')";
-        $query_run = mysqli_query($conn, $query);
+        $query = "INSERT INTO user_table (username, email, password) VALUES ($1, $2, $3)";
+        $query_run = pg_query_params($conn, $query, array($name, $email, $password));
 
         if ($query_run) {
             $_SESSION['email'] = $email;
@@ -78,20 +73,17 @@ if (isset($_POST['signup'])) {
         }
     }
 
-    // $past_url = get_past_url("signup");
-    // header("location:..{$past_url}");
     echo json_encode($result);
 }
 
 if (isset($_POST['login'])) {
-
     $email = $_POST['login_email'];
     $password = $_POST['login_password'];
 
     $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-    $query = "SELECT * FROM user_table where (email = '$email' && password = '$password')";
-    $query_run = mysqli_query($conn, $query);
+    $query = "SELECT * FROM user_table WHERE email = $1 AND password = $2";
+    $query_run = pg_query_params($conn, $query, array($email, $password));
 
     $result = [
         "status"=> "",
@@ -99,7 +91,7 @@ if (isset($_POST['login'])) {
         "url" => "http://" . $_SERVER['HTTP_HOST'] . get_past_url(""),
     ];
 
-    if ($query_run && mysqli_num_rows($query_run) > 0) {
+    if ($query_run && pg_num_rows($query_run) > 0) {
         $_SESSION['email'] = $email;
         $result["status"] = "success";
         $result["message"] = "login success";
@@ -108,19 +100,13 @@ if (isset($_POST['login'])) {
         $result["message"] = "Email or password wrong";
     }
 
-    // header("location:..{$past_url}");
-    
     echo json_encode($result);
 }
 
 if (isset($_POST['logout'])) {
-
     $current_url = get_past_url("");
-
     session_unset();
-
     header("location:..{$current_url}");
-
 }
 
 ?>

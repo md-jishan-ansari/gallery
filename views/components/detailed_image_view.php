@@ -6,17 +6,17 @@
 
     // $query = "SELECT * FROM images_table where user_email = '$user_email' && id <= '$id' order by id desc limit 4";
 
-    $query_one = "(SELECT * FROM images_table where user_email = '$user_email' && id > '$id' && id not in (SELECT image_id from deleted_images) order by id limit 1)";
-    $query_second = "(SELECT * FROM images_table where user_email = '$user_email' && id <= '$id' && id not in (SELECT image_id from deleted_images) order by id desc limit 2)";
+    $query_one = "(SELECT * FROM images_table WHERE user_email = $1 AND id > $2 AND id NOT IN (SELECT image_id FROM deleted_images) ORDER BY id LIMIT 1)";
+    $query_second = "(SELECT * FROM images_table WHERE user_email = $1 AND id <= $2 AND id NOT IN (SELECT image_id FROM deleted_images) ORDER BY id DESC LIMIT 2)";
     $query = $query_one . " UNION " . $query_second;
 
-    $query_run = mysqli_query($conn, $query);
+    $query_run = pg_query_params($conn, $query, array($user_email, $id));
 
-?> 
+?>
 
 
 <!-- <div id="imageStatus">
-    
+
 </div> -->
 
 <div id="imageCarousel" class="carousel carousel-dark slide">
@@ -24,13 +24,11 @@
     <div class="carousel-inner" id="carousel_container">
 
         <?php
-            if (mysqli_num_rows($query_run) > 0) {
-                foreach ($query_run as $row) {
+            if (pg_num_rows($query_run) > 0) {
+                while ($row = pg_fetch_assoc($query_run)) {
                 $img = $row['path'] . $row['image_name'] .  "." . $row['image_ext'];
                 $img = "../../" . $img;
             ?>
-
-        <?php print_r($_SESSION['temp_current_queries']); ?>
 
             <div class="carousel-item <?php if($row['id'] == $id) echo 'active' ?>" data-value="<?php echo $row['id']; ?>">
 
@@ -39,7 +37,7 @@
                     <p >
                         <?php echo $row['image_name']; ?>
                     </p>
-                </div> 
+                </div>
             </div>
 
         <?php }} ?>

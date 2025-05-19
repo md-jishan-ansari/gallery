@@ -3,8 +3,8 @@
 
 $user_email = $_SESSION['email'];
 
-$query = "SELECT * FROM images_table where user_email = '$user_email' && id not in (SELECT image_id from deleted_images) order by id desc limit 12";
-$query_run = mysqli_query($conn, $query);
+$query = "SELECT * FROM images_table WHERE user_email = $1 AND id NOT IN (SELECT image_id FROM deleted_images) ORDER BY id DESC LIMIT 12";
+$query_run = pg_query_params($conn, $query, array($user_email));
 
 ?>
 
@@ -21,11 +21,11 @@ $query_run = mysqli_query($conn, $query);
 
             <?php
 
-            if (mysqli_num_rows($query_run) > 0) {
-                foreach ($query_run as $row) {
+            if (pg_num_rows($query_run) > 0) {
+                while ($row = pg_fetch_assoc($query_run)) {
 
                     // echo date('d/m/Y', $row["upload_time"]);
-            
+
                     $img = $row['path'] . $row['image_name'] . "." . $row['image_ext'];
                     $img = "../../" . $img;
 
@@ -40,11 +40,11 @@ $query_run = mysqli_query($conn, $query);
                             <!-- <div class="card-body" style="padding: 0;">
                         </div> -->
 
-                            
+
 
                             <div class="card-footer text-muted" style="height: 100%;">
 
-                            
+
                                 <a href="detailed_image.php?id=<?php echo $row['id']; ?>">
                                         <div class="card-image-overlay" onmouseover="imageMouseOver(<?php echo $row['id']; ?>)"
                                         onmouseout="imageMouseOut(<?php echo $row['id']; ?>)">
@@ -92,9 +92,10 @@ $query_run = mysqli_query($conn, $query);
                                             <div class="modal-body">
                                                 <div class="input-group mb-3">
                                                     <p>
-                                                        <?php 
+                                                        <?php
                                                             $encrypted_id = openssl_encrypt($_SESSION['email'] . "-" . $row['id'], $ciphering, $secret_key, $options, $secret_iv);
-                                                            echo "http://" . $_SERVER['HTTP_HOST'] . "/views/pages/" . "shared_image.php" . "?img_id=" . $encrypted_id; 
+                                                            $share_url = "http://" . $_SERVER['HTTP_HOST'] . "/views/pages/shared_image.php?img_id=" . urlencode($encrypted_id);
+                                                            echo htmlspecialchars($share_url);
                                                         ?>
                                                     </p>
                                                 </div>

@@ -1,17 +1,24 @@
 <?php
-    error_reporting(0); //it removes all warning not Error
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-    $servername = "...";
+    $servername = "localhost";
+    $port = "5432"; // Default PostgreSQL port
     $username = "...";
     $password = "...";
-    $dbname = "...";
+    $dbname = "gallery";
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+    // Connect to PostgreSQL with all parameters and options
+    $conn_string = "host=$servername port=$port dbname=$dbname user=$username password=$password";
+    $conn = pg_connect($conn_string, PGSQL_CONNECT_FORCE_NEW);
 
     if($conn) {
         // echo "connection ok";
     } else {
-        echo "connection failed".mysqli_connect_error();
+        echo "Connection failed: " . pg_last_error() . "\n";
+        echo "Connection string: " . $conn_string . "\n";
+        echo "PHP version: " . phpversion() . "\n";
+        echo "PostgreSQL extension loaded: " . (extension_loaded('pgsql') ? 'Yes' : 'No') . "\n";
     }
 
 
