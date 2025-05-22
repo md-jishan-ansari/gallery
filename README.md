@@ -36,4 +36,4 @@ In starting time only 3 images fetched and when user click next button than next
 It works in any devices. It is fully responsive.
 
 # Tech Stack
-`PHP`, `HTML`, `CSS`, `Bootstrap`, `jQuery`, `MySQL`
+`PHP`, `HTML`, `CSS`, `Bootstrap`, `jQuery`, `Postgresql`
