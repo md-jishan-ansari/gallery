@@ -6,11 +6,31 @@
 
     // $query = "SELECT * FROM images_table where user_email = '$user_email' && id <= '$id' order by id desc limit 4";
 
-    $query_one = "(SELECT * FROM images_table WHERE user_email = $1 AND id > $2 AND id NOT IN (SELECT image_id FROM deleted_images) ORDER BY id LIMIT 1)";
-    $query_second = "(SELECT * FROM images_table WHERE user_email = $1 AND id <= $2 AND id NOT IN (SELECT image_id FROM deleted_images) ORDER BY id DESC LIMIT 2)";
-    $query = $query_one . " UNION " . $query_second;
+    $query_one = "
+        (SELECT * FROM images_table
+        WHERE user_email = $1 AND id > $2
+        AND id NOT IN (SELECT image_id FROM deleted_images)
+        ORDER BY id
+        LIMIT 4)";
+
+    $query_second = "
+        (SELECT * FROM images_table
+        WHERE user_email = $1 AND id <= $2
+        AND id NOT IN (SELECT image_id FROM deleted_images)
+        ORDER BY id DESC
+        LIMIT 4)";
+
+    $query = "
+        SELECT * FROM (
+            $query_one
+            UNION
+            $query_second
+        ) AS combined
+        ORDER BY id DESC
+    ";
 
     $query_run = pg_query_params($conn, $query, array($user_email, $id));
+
 
 ?>
 

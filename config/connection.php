@@ -4,8 +4,8 @@
 
     $servername = "localhost";
     $port = "5432"; // Default PostgreSQL port
-    $username = "...";
-    $password = "...";
+    $username = "";
+    $password = "";
     $dbname = "gallery";
 
     // Connect to PostgreSQL with all parameters and options
