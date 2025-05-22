@@ -9,7 +9,7 @@ $_SESSION["current_url"] = $_SERVER['REQUEST_URI'];
 parse_str($_SERVER['QUERY_STRING'], $query_array);
 $_SESSION["current_queries"] = $query_array;
 
-if($_SESSION["current_url"] != "/views/pages/home.php" && !isset($_SESSION["email"])) 
+if($_SESSION["current_url"] != "/views/pages/home.php" && !isset($_SESSION["email"]))
     $_SESSION["not_loggedIn"] = "You are not Logged In, Please Login to access this route!";
 
 
@@ -41,8 +41,13 @@ if($_SESSION['current_script_name'] == "/views/pages/home.php") {
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/fabicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/fabicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/fabicon/favicon-16x16.png">
+    <link rel="manifest" href="../../assets/images/fabicon/site.webmanifest">
+
     <link rel="stylesheet" href="../../assets/css/main.css">
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- for adding a jQuery -->
     <title><?php echo $Project_title ?></title>
